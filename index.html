@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Расчет сечения</title>
+  <style>
+    #historyBox { display: none; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+    #historyList { white-space: pre-line; }
+  </style>
   <script>
+    let historyVisible = false;
+
     async function calculate() {
       const N = parseFloat(document.getElementById("inputN").value);
       const D = parseFloat(document.getElementById("inputD").value);
-      const artikul = document.getElementById("inputArtikul").value;
-      const lot = document.getElementById("inputLot").value;
+      const artikul = document.getElementById("inputArtikul").value.trim();
+      const lot = document.getElementById("inputLot").value.trim();
 
       if (isNaN(D) || isNaN(N) || !artikul || !lot) {
         alert("Заполните все поля корректно!");
@@ -18,7 +24,6 @@
       const result = (Math.PI * Math.pow(D, 2) * N) / 4;
       document.getElementById("result").innerText = "Результат: " + result.toFixed(4);
 
-      // Сохраняем в Google Sheets
       const data = {
         artikul: artikul,
         lot: lot,
@@ -27,7 +32,8 @@
         result: result.toFixed(4)
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbyaoMyI_8h4ykY8Trs69SWyI8ENglGZBNpPLHu1fzYDSemZhSxT62LsEncitY3IF6X4/exec", {
+      // Сохраняем данные в Google Sheets
+      await fetch("https://script.google.com/macros/s/AKfycby0hgKHSyJVbO2JDnqXvn-DODXEfJy4unr7DwYGfK9XKTcRidgYdAD9Q07IS-0vTc_0/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -35,6 +41,36 @@
         },
         body: JSON.stringify(data)
       });
+
+      // Загружаем историю
+      if (historyVisible) {
+        loadHistory();
+      }
+    }
+
+    function toggleHistory() {
+      historyVisible = !historyVisible;
+      const box = document.getElementById("historyBox");
+      if (historyVisible) {
+        box.style.display = "block";
+        loadHistory();
+      } else {
+        box.style.display = "none";
+      }
+    }
+
+    async function loadHistory() {
+      const lot = document.getElementById("inputLot").value.trim();
+      if (!lot) {
+        alert("Введите LOT для отображения истории.");
+        return;
+      }
+
+      // Запрос истории с сервера
+      const response = await fetch(`https://script.google.com/macros/s/AKfycby0hgKHSyJVbO2JDnqXvn-DODXEfJy4unr7DwYGfK9XKTcRidgYdAD9Q07IS-0vTc_0/exec?lot=${encodeURIComponent(lot)}`);
+      const historyText = await response.text();
+
+      document.getElementById("historyList").innerText = historyText || "История не найдена.";
     }
   </script>
 </head>
@@ -54,7 +90,13 @@
   <input type="number" id="inputN"><br><br>
 
   <button onclick="calculate()">Рассчитать и Сохранить</button>
+  <button onclick="toggleHistory()">Показать / Скрыть Историю LOT</button>
 
   <p id="result"></p>
+
+  <div id="historyBox">
+    <h3>История по LOT</h3>
+    <div id="historyList"></div>
+  </div>
 </body>
 </html>
