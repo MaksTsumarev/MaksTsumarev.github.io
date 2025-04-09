@@ -33,7 +33,7 @@
       };
 
       // Сохраняем данные в Google Sheets
-      await fetch("https://script.google.com/macros/s/AKfycby0hgKHSyJVbO2JDnqXvn-DODXEfJy4unr7DwYGfK9XKTcRidgYdAD9Q07IS-0vTc_0/exec", {
+      await fetch("https://script.google.com/macros/s/AKfycbxm77NVP775pcRAWr-EjGPtVf4g9-CJtN_2mnbgzlq5raY9eppFHnu6BREFnwgQdKZQ/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -42,7 +42,6 @@
         body: JSON.stringify(data)
       });
 
-      // Загружаем историю
       if (historyVisible) {
         loadHistory();
       }
@@ -60,16 +59,14 @@
     }
 
     async function loadHistory() {
-      const lot = document.getElementById("inputLot").value.trim();
-      if (!lot) {
-        alert("Введите LOT для отображения истории.");
+      const artikul = document.getElementById("inputArtikul").value.trim();
+      if (!artikul) {
+        alert("Введите артикул для отображения истории.");
         return;
       }
 
-      // Запрос истории с сервера
-      const response = await fetch(`https://script.google.com/macros/s/AKfycby0hgKHSyJVbO2JDnqXvn-DODXEfJy4unr7DwYGfK9XKTcRidgYdAD9Q07IS-0vTc_0/exec?lot=${encodeURIComponent(lot)}`);
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbxm77NVP775pcRAWr-EjGPtVf4g9-CJtN_2mnbgzlq5raY9eppFHnu6BREFnwgQdKZQ/exec?artikul=${encodeURIComponent(artikul)}`);
       const historyText = await response.text();
-
       document.getElementById("historyList").innerText = historyText || "История не найдена.";
     }
   </script>
@@ -90,12 +87,12 @@
   <input type="number" id="inputN"><br><br>
 
   <button onclick="calculate()">Рассчитать и Сохранить</button>
-  <button onclick="toggleHistory()">Показать / Скрыть Историю LOT</button>
+  <button onclick="toggleHistory()">Показать / Скрыть Историю Артикула</button>
 
   <p id="result"></p>
 
   <div id="historyBox">
-    <h3>История по LOT</h3>
+    <h3>История по Артикулу</h3>
     <div id="historyList"></div>
   </div>
 </body>
