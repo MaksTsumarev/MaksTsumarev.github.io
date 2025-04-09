@@ -33,7 +33,7 @@
       };
 
       // Сохраняем данные в Google Sheets
-      await fetch("https://script.google.com/macros/s/AKfycbxipr1fV8u8Fv_A8l2iY5E9Lzk-EHuzJbhvaDX8_Je34FEuEvVxWxw0OQ1TtJLvv57c/exec", {
+      await fetch("https://script.google.com/macros/s/AKfycbxRiVruWsE9Fw-h3HMCJo1Vf1NEe8vxUX9JgxZLEJwJCgdUpNgMVRx6oL94gcLdIfcA/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -65,7 +65,7 @@
         return;
       }
 
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbxipr1fV8u8Fv_A8l2iY5E9Lzk-EHuzJbhvaDX8_Je34FEuEvVxWxw0OQ1TtJLvv57c/exec?artikul=${encodeURIComponent(artikul)}`);
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbxRiVruWsE9Fw-h3HMCJo1Vf1NEe8vxUX9JgxZLEJwJCgdUpNgMVRx6oL94gcLdIfcA/exec?artikul=${encodeURIComponent(artikul)}`);
       const historyText = await response.text();
       document.getElementById("historyList").innerText = historyText || "История не найдена.";
     }
