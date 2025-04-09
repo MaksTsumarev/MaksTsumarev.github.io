@@ -66,14 +66,46 @@
             if (history[article]) {
                 var historyList = history[article];
                 // Для каждого расчета выводим новый элемент списка
-                historyList.forEach(function(item) {
+                historyList.forEach(function(item, index) {
                     var historyItem = document.createElement("p");
                     historyItem.innerText = `LOT#: ${item.lot}, Результат: ${item.result}`;
+
+                    // Создаем кнопку для удаления записи
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerText = "Удалить";
+                    deleteButton.onclick = function() {
+                        deleteHistory(article, index);  // Удалить из истории
+                    };
+
+                    // Добавляем кнопку удаления рядом с элементом
+                    historyItem.appendChild(deleteButton);
                     historyElement.appendChild(historyItem);
                 });
             } else {
                 historyElement.innerText = "Нет истории для данного артикула.";
             }
+        }
+
+        // Функция для удаления записи из истории
+        function deleteHistory(article, index) {
+            // Загружаем историю из localStorage
+            var history = localStorage.getItem("history");
+            if (history === null) {
+                history = {};  // Если истории нет, создаем новый объект
+            } else {
+                history = JSON.parse(history); // Если история есть, преобразуем её из JSON в объект
+            }
+
+            // Удаляем элемент по индексу
+            if (history[article] && history[article].length > index) {
+                history[article].splice(index, 1);  // Удаляем элемент из массива
+            }
+
+            // Сохраняем обновленную историю в localStorage
+            localStorage.setItem("history", JSON.stringify(history));
+
+            // Перерисовываем историю
+            displayHistory(article);
         }
 
         // Функция для загрузки истории при открытии страницы
