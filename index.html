@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расчет формулы</title>
     <script>
+        // Функция для расчета
         function calculate() {
             // Получаем значения из полей ввода
             var N = parseFloat(document.getElementById("inputN").value);
@@ -21,33 +22,68 @@
             // Расчет по формуле
             var result = (Math.PI * Math.pow(D, 2) * N) / 4;
 
-            // Сохраняем результаты в localStorage
-            localStorage.setItem("lastResult", result.toFixed(4));
-            localStorage.setItem("lastArticle", article);
-            localStorage.setItem("lastLot", lot);
+            // Загружаем сохраненные данные из localStorage
+            var history = localStorage.getItem("history");
+            if (history === null) {
+                history = {};  // Если истории нет, создаем новый объект
+            } else {
+                history = JSON.parse(history); // Если история есть, преобразуем её из JSON в объект
+            }
 
-            // Выводим результат
+            // Добавляем новый расчет в историю для текущего артикула
+            if (!history[article]) {
+                history[article] = []; // Если для артикула еще нет истории, создаем массив
+            }
+
+            // Добавляем новый расчет в историю
+            history[article].push({ lot: lot, result: result.toFixed(4) });
+
+            // Сохраняем обновленную историю в localStorage
+            localStorage.setItem("history", JSON.stringify(history));
+
+            // Отображаем результат
             document.getElementById("result").innerText = "Результат: " + result.toFixed(4);
-            document.getElementById("savedInfo").innerText = `Артикул: ${article}, LOT#: ${lot}`;
+            displayHistory(article);
         }
 
-        // Функция для загрузки сохраненных данных при загрузке страницы
-        function loadSavedData() {
-            var savedResult = localStorage.getItem("lastResult");
-            var savedArticle = localStorage.getItem("lastArticle");
-            var savedLot = localStorage.getItem("lastLot");
+        // Функция для отображения истории расчетов для артикула
+        function displayHistory(article) {
+            // Загружаем историю из localStorage
+            var history = localStorage.getItem("history");
+            if (history === null) {
+                history = {};  // Если истории нет, создаем новый объект
+            } else {
+                history = JSON.parse(history); // Если история есть, преобразуем её из JSON в объект
+            }
 
-            if (savedResult !== null && savedArticle !== null && savedLot !== null) {
-                document.getElementById("result").innerText = "Последний расчет: " + savedResult;
-                document.getElementById("savedInfo").innerText = `Артикул: ${savedArticle}, LOT#: ${savedLot}`;
+            // Получаем элементы для вывода
+            var historyElement = document.getElementById("history");
+
+            // Очищаем старую историю
+            historyElement.innerHTML = "";
+
+            // Проверяем, есть ли история для выбранного артикула
+            if (history[article]) {
+                var historyList = history[article];
+                // Для каждого расчета выводим новый элемент списка
+                historyList.forEach(function(item) {
+                    var historyItem = document.createElement("p");
+                    historyItem.innerText = `LOT#: ${item.lot}, Результат: ${item.result}`;
+                    historyElement.appendChild(historyItem);
+                });
+            } else {
+                historyElement.innerText = "Нет истории для данного артикула.";
             }
         }
 
-        // Загружаем сохраненные данные при загрузке страницы
-        window.onload = loadSavedData;
+        // Функция для загрузки истории при открытии страницы
+        function loadSavedData() {
+            var article = document.getElementById("inputArticle").value;
+            displayHistory(article);
+        }
     </script>
 </head>
-<body>
+<body onload="loadSavedData()">
     <h1>Расчет формулы</h1>
 
     <label for="inputN">Введите количество жил N:</label>
@@ -59,7 +95,7 @@
     <br><br>
 
     <label for="inputArticle">Артикул:</label>
-    <input type="text" id="inputArticle" required>
+    <input type="text" id="inputArticle" required oninput="loadSavedData()">
     <br><br>
 
     <label for="inputLot">LOT#:</label>
@@ -69,6 +105,8 @@
     <button onclick="calculate()">Рассчитать</button>
 
     <p id="result"></p>
-    <p id="savedInfo"></p>
+
+    <h2>История расчетов для артикула:</h2>
+    <div id="history"></div>
 </body>
 </html>
