@@ -34,7 +34,7 @@
       };
 
       // Сохраняем данные в Google Sheets
-      await fetch("https://script.google.com/macros/s/AKfycbySRlDcpbg1gnBtxzdHg9H6ZacnjtBWSV9vAbb8x_Mx7H6Ns6IMUyajcaFE-r7m1O2K/exec", {
+      await fetch("https://script.google.com/macros/s/AKfycbwxbzu9juRBpYEof22fNwbwHvpUwa-4KBR5-HqdKb8_XM82M5BRPYWlSLm5Q9tX3VjZ/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -66,10 +66,67 @@
         return;
       }
 
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbySRlDcpbg1gnBtxzdHg9H6ZacnjtBWSV9vAbb8x_Mx7H6Ns6IMUyajcaFE-r7m1O2K/exec?artikul=${encodeURIComponent(artikul)}`);
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbwxbzu9juRBpYEof22fNwbwHvpUwa-4KBR5-HqdKb8_XM82M5BRPYWlSLm5Q9tX3VjZ/exec?artikul=${encodeURIComponent(artikul)}`);
       const historyText = await response.text();
       document.getElementById("historyList").innerHTML = historyText || "История не найдена.";
     }
+
+    async function determineTnVed() {
+  const artikul = document.getElementById("inputArtikul").value.trim();
+  const material = document.getElementById("material").value;
+  const boardType = document.getElementById("boardType").value;
+
+  if (!artikul) {
+    alert("Введите артикул.");
+    return;
+  }
+
+  // Проверяем наличие в БД
+  const response = await fetch(`https://script.google.com/macros/s/AKfycbwxbzu9juRBpYEof22fNwbwHvpUwa-4KBR5-HqdKb8_XM82M5BRPYWlSLm5Q9tX3VjZ/exec?artikul=${encodeURIComponent(artikul)}`);
+  const historyText = await response.text();
+
+  // Если найден ТН ВЭД — выводим
+  if (historyText && historyText.includes("ТН ВЭД:")) {
+    const match = historyText.match(/ТН ВЭД:\s*(\d+)/);
+    if (match) {
+      const tnVedCode = match[1];
+      document.getElementById("tnVedResult").innerText = "Найденный код ТН ВЭД из БД: " + tnVedCode;
+      return;
+    }
+  }
+
+  // Если не найден — рассчитываем
+  if (!material || !boardType) {
+    alert("Выберите материал и тип платы для определения кода ТН ВЭД.");
+    return;
+  }
+
+  const tnVedCode = determineTnVedCode(material, boardType);
+  document.getElementById("tnVedResult").innerText = "Рассчитанный код ТН ВЭД: " + tnVedCode;
+
+  // Отправляем в БД
+  const data = {
+    artikul: artikul,
+    tnved: tnVedCode
+  };
+
+  await fetch("https://script.google.com/macros/s/AKfycbwxbzu9juRBpYEof22fNwbwHvpUwa-4KBR5-HqdKb8_XM82M5BRPYWlSLm5Q9tX3VjZ/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+}
+
+    function determineTnVedCode(material, boardType) {
+  if (material === "plastic" && boardType === "rigid") return "9405110013";
+  if (material === "plastic" && boardType === "flex") return "9405110014";
+  if (material === "other" && boardType === "rigid") return "9405110033";
+  if (material === "other" && boardType === "flex") return "9405110039";
+  return "Неизвестно";
+}
 
     async function deleteHistoryRow(rowIndex) {
       const artikul = document.getElementById("inputArtikul").value.trim();
@@ -78,7 +135,7 @@
         return;
       }
 
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbySRlDcpbg1gnBtxzdHg9H6ZacnjtBWSV9vAbb8x_Mx7H6Ns6IMUyajcaFE-r7m1O2K/exec?artikul=${encodeURIComponent(artikul)}&deleteRow=${rowIndex}`);
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbwxbzu9juRBpYEof22fNwbwHvpUwa-4KBR5-HqdKb8_XM82M5BRPYWlSLm5Q9tX3VjZ/exec?artikul=${encodeURIComponent(artikul)}&deleteRow=${rowIndex}`);
       const result = await response.text();
       alert(result);
       loadHistory();
