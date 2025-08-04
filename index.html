@@ -77,6 +77,23 @@ button:hover {
       pointer-events: none;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
+
+    #staffLabel {
+  position: fixed;
+  top: 30%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-weight: bold;
+  font-size: 18px;
+  color: #007bff;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  z-index: 1001;
+  pointer-events: none;
+  user-select: none;
+}
 </style>
   <script>
     let historyVisible = false;
@@ -222,7 +239,10 @@ button:hover {
   </script>
 </head>
 <body>
-<img src="photo_2024-03-03_00-21-29.jpg" id="overlayImage" alt="Фото">
+  
+  <img src="photo_2024-03-03_00-21-29.jpg" id="overlayImage" alt="Фото">
+
+  <div id="staffLabel">Наши сотрудники</div>
   
   <h2>Расчет сечения</h2>
 
