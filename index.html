@@ -4,10 +4,61 @@
   <meta charset="UTF-8">
   <title>Расчет сечения</title>
   <style>
-    #historyBox { display: none; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
-    #historyList { white-space: pre-line; }
-    .delete-button { color: red; cursor: pointer; }
-  </style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f8f9fa;
+    color: #333;
+  }
+
+  h2 {
+    color: #007bff;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  input, select {
+    padding: 8px;
+    width: 300px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  #result, #tnVedResult {
+    margin-top: 20px;
+    font-weight: bold;
+  }
+
+  #historyBox {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  #historyList {
+    font-family: monospace;
+    white-space: pre-wrap;
+  }
+</style>
   <script>
     let historyVisible = false;
 
